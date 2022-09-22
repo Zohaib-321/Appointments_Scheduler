@@ -1,6 +1,6 @@
 const { db } = require("../check/pgAdaptor");
-const { GraphQLObjectType, GraphQLID, GraphQLString } = require("graphql");
-const { UserType, ProjectType, jobType } = require("./types");
+const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInputObjectType, GraphQLInt } = require("graphql");
+const { UserType, ProjectType, jobType, availabilityType } = require("./types");
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -47,6 +47,35 @@ const RootQuery = new GraphQLObjectType({
           .catch((err) => err);
       },
     },
+
+    availability: {
+      type: availabilityType,
+      args: { id: { type: GraphQLID} },
+      resolve(parentValue, args) {
+        const query = `SELECT * FROM availabilities WHERE id=$1`;
+        const values = [args.id];
+
+        return db
+          .one(query, values)
+          .then((res) => res)
+          .catch((err) => err);
+      },
+    },
+
+    getavailability: {
+        type: availabilityType,
+        args: {limit: {type: GraphQLInt} , 
+        sort: {type: GraphQLString} },
+        resolve(parentValue, args) {
+          const query = `SELECT * FROM availabilities`;
+          const values = [args.limit, args.sort];
+  
+          return db
+            .one(query, values)
+            .then((res) => res)
+            .catch((err) => err);
+        },
+      },
   },
 });
 

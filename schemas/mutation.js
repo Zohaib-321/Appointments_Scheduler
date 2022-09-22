@@ -1,7 +1,7 @@
 const graphql = require("graphql");
 const db = require("../check/pgAdaptor").db;
 const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt } = graphql;
-const { ProjectType, jobType } = require("./types");
+const { ProjectType, jobType, availabilityType } = require("./types");
 
 const RootMutation = new GraphQLObjectType({
   name: "RootMutationType",
@@ -39,9 +39,33 @@ const RootMutation = new GraphQLObjectType({
       },
       resolve(parentValue, args) {
         const query = `INSERT INTO job(position, type, salaray, project_id) VALUES ($1, $2, $3, $4) RETURNING type`;
-        const values = [args.position, args.type, args.salaray, args.project_id];
-        
+        const values = [
+          args.position,
+          args.type,
+          args.salaray,
+          args.project_id,
+        ];
 
+        return db
+          .one(query, values)
+          .then((res) => res)
+          .catch((err) => err);
+      },
+    },
+    addAvailability: {
+      type: availabilityType,
+      args: {
+        providerid: { type: GraphQLInt },
+        googlecalendarid: { type: GraphQLInt },
+      },
+      resolve(parentValue, args) {
+        const query = `INSERT INTO availabilities(start, endtime, providerid, googlecalendarid) VALUES ($1, $2, $3, $4) RETURNING start`;
+        const values = [
+          new Date(),
+          new Date(),
+          args.googlecalendarid,
+          args.providerid,
+        ];
         return db
           .one(query, values)
           .then((res) => res)

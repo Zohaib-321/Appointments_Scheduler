@@ -38,6 +38,20 @@ const jobType = new GraphQLObjectType({
     },
 }); 
 
+const availabilityType = new GraphQLObjectType({
+
+    name: "provider_availablity",
+    type: "Query",
+    fields: {
+        id: { type: GraphQLString },
+        start: {type: GraphQLString},
+        endtime: {type: GraphQLString},
+        providerid: {type: GraphQLString},
+        googlecalendarid: {type: GraphQLString}
+    },
+}); 
+
 exports.UserType = UserType;
 exports.ProjectType = ProjectType;
 exports.jobType = jobType;
+exports.availabilityType = availabilityType;
